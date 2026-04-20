@@ -6,6 +6,7 @@ import { renderTodosLine } from './todos-line.js';
 import { renderIdentityLine, renderProjectLine, renderGitFilesLine, renderEnvironmentLine, renderPromptCacheLine, renderUsageLine, renderMemoryLine, renderSessionTokensLine, } from './lines/index.js';
 import { dim, RESET } from './colors.js';
 import { getTerminalWidth, UNKNOWN_TERMINAL_WIDTH } from '../utils/terminal.js';
+import { getModelName, formatModelName, getContextPercent } from '../stdin.js';
 // eslint-disable-next-line no-control-regex
 const ANSI_ESCAPE_PATTERN = /^(?:\x1b\[[0-9;]*m|\x1b\][^\x07\x1b]*(?:\x07|\x1b\\))/;
 // eslint-disable-next-line no-control-regex
@@ -442,5 +443,20 @@ export function render(ctx) {
         const outputLine = `${RESET}${line}`;
         console.log(outputLine);
     }
+    if (ctx.tuiMode === 'fullscreen') {
+        process.stderr.write(buildTerminalTitle(ctx));
+    }
+}
+function buildTerminalTitle(ctx) {
+    const model = formatModelName(getModelName(ctx.stdin), 'short');
+    const ctxPct = getContextPercent(ctx.stdin);
+    const runningTools = ctx.transcript.tools.filter(t => t.status === 'running').length;
+    const runningAgents = ctx.transcript.agents.filter(a => a.status === 'running').length;
+    const parts = [`[${model}]`, `ctx:${ctxPct}%`];
+    if (runningTools > 0)
+        parts.push(`⚙ ${runningTools}`);
+    if (runningAgents > 0)
+        parts.push(`→ ${runningAgents}`);
+    return `\x1b]0;${parts.join(' | ')}\x07`;
 }
 //# sourceMappingURL=index.js.map

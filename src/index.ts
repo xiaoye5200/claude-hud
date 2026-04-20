@@ -70,7 +70,7 @@ export async function main(overrides: Partial<MainDeps> = {}): Promise<void> {
 
     deps.applyContextWindowFallback(stdin, {}, transcript.sessionName);
 
-    const { claudeMdCount, rulesCount, mcpCount, hooksCount, outputStyle } =
+    const { claudeMdCount, rulesCount, mcpCount, hooksCount, outputStyle, tuiMode } =
       await deps.countConfigs(stdin.cwd);
 
     const config = await deps.loadConfig();
@@ -117,6 +117,7 @@ export async function main(overrides: Partial<MainDeps> = {}): Promise<void> {
       config,
       extraLabel,
       outputStyle,
+      tuiMode,
       claudeCodeVersion,
       effortLevel: effortInfo?.level,
       effortSymbol: effortInfo?.symbol,

@@ -214,7 +214,8 @@ function isConfigCounts(value) {
         && typeof counts.hooksCount === 'number'
         && Number.isFinite(counts.hooksCount)
         && counts.hooksCount >= 0
-        && (counts.outputStyle === undefined || typeof counts.outputStyle === 'string'));
+        && (counts.outputStyle === undefined || typeof counts.outputStyle === 'string')
+        && (counts.tuiMode === undefined || typeof counts.tuiMode === 'string'));
 }
 function readConfigCache(cacheKey, homeDir) {
     try {
@@ -270,6 +271,8 @@ function computeConfigCountsFresh(cwd) {
     outputStyle = readStringSetting(userSettings, 'outputStyle');
     const userLocalSettings = path.join(claudeDir, 'settings.local.json');
     outputStyle = readStringSetting(userLocalSettings, 'outputStyle') ?? outputStyle;
+    const tuiMode = readStringSetting(userSettings, 'tui')
+        ?? readStringSetting(userLocalSettings, 'tui');
     // {CLAUDE_CONFIG_DIR}.json (additional user-scope MCPs)
     const userClaudeJson = getClaudeConfigJsonPath(homeDir);
     for (const name of getMcpServerNames(userClaudeJson)) {
@@ -341,7 +344,7 @@ function computeConfigCountsFresh(cwd) {
     // Note: Deduplication only occurs within each scope, not across scopes.
     // A server with the same name in both user and project scope counts as 2 (separate configs).
     const mcpCount = userMcpServers.size + projectMcpServers.size;
-    return { claudeMdCount, rulesCount, mcpCount, hooksCount, outputStyle };
+    return { claudeMdCount, rulesCount, mcpCount, hooksCount, outputStyle, tuiMode };
 }
 export async function countConfigs(cwd) {
     const homeDir = os.homedir();

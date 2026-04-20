@@ -102,6 +102,7 @@ export interface RenderContext {
     config: HudConfig;
     extraLabel: string | null;
     outputStyle?: string;
+    tuiMode?: string;
     claudeCodeVersion?: string;
     effortLevel?: string;
     effortSymbol?: string;
